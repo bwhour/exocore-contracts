@@ -14,6 +14,7 @@ contract GatewayStorage {
         RESPOND
     }
 
+    mapping(uint32 eid => mapping(bytes32 sender => uint64 nonce)) public inboundNonce;
     mapping(Action => bytes4) internal _whiteListFunctionSelectors;
     address payable public exocoreValidatorSetAddress;
 
@@ -23,6 +24,13 @@ contract GatewayStorage {
     error UnexpectedSourceChain(uint32 unexpectedSrcEndpointId);
     error UnexpectedInboundNonce(uint64 expectedNonce, uint64 actualNonce);
 
+    function _verifyAndUpdateNonce(uint32 srcChainId, bytes32 srcAddress, uint64 nonce) internal {
+        uint64 expectedNonce = inboundNonce[srcChainId][srcAddress] + 1;
+        if (nonce != expectedNonce) {
+            revert UnexpectedInboundNonce(expectedNonce, nonce);
+        }
+        inboundNonce[srcChainId][srcAddress] = nonce;
+    }
     uint256[40] private __gap;
 
 }
