@@ -185,13 +185,7 @@ contract BootstrapStorage is GatewayStorage {
     address[] public whitelistTokens;
 
     /**
-     * @dev Stores a mapping of whitelisted token addresses to their status.
-     * @notice Use this to check if a token is allowed for processing.
-     * Each token address maps to a boolean indicating whether it is whitelisted.
-     */
-    mapping(address token => bool whitelisted) public isWhitelistedToken;
 
-    /**
      * @dev Maps token addresses to their corresponding vault contracts.
      * @notice Access the vault interface for a specific token using this mapping.
      * Each token address maps to an IVault contract instance handling its operations.
@@ -398,15 +392,7 @@ contract BootstrapStorage is GatewayStorage {
 
     uint256[40] private __gap;
 
-    modifier isTokenWhitelisted(address token) {
-        require(isWhitelistedToken[token], "BootstrapStorage: token is not whitelisted");
-        _;
-    }
 
-    modifier isValidAmount(uint256 amount) {
-        require(amount > 0, "BootstrapStorage: amount should be greater than zero");
-        _;
-    }
 
     modifier vaultExists(address token) {
         require(address(tokenToVault[token]) != address(0), "BootstrapStorage: no vault added for this token");
