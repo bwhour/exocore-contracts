@@ -58,6 +58,7 @@ interface IDelegation {
         bytes memory operatorAddr,
         uint256 opAmount
     ) external returns (bool success);
+
     function undelegateFrom(
         uint32 clientChainId,
         bytes memory assetsAddress,

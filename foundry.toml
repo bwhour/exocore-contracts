@@ -6,6 +6,8 @@ fs_permissions = [{ access = "read-write", path = "./"}]
 gas_limit = "18446744073709551615"
 memory_limit = 18446744073709
 evm_version = "paris"
+optimizer = true
+optimizer-runs = 200
 
 [rpc_endpoints]
 ethereum_local_rpc = "${ETHEREUM_LOCAL_RPC}"
