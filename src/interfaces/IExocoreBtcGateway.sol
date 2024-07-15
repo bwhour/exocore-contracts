@@ -13,9 +13,9 @@ interface IExocoreBtcGateway {
         bytes srcAddress;
         bytes dstAddress;
         address token; // btc virtual token
-        uint256 amount; // deposit amount
+        uint256 amount; //btc deposit amount
         uint64 nonce;
-        bytes txHash; // btc txHash
+        bytes txTag; //btc lowercase(txid-vout)
         bytes payload;
     }
 

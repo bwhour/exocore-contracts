@@ -53,13 +53,17 @@ contract DelegationMock is IDelegation {
         require(assetsAddress.length == 32, "invalid asset address");
         require(stakerAddress.length == 32, "invalid staker address");
         require(operatorAddr.length == 42, "invalid operator address");
-        require(opAmount <= delegateToRecords[stakerAddress][operatorAddr][clientChainLzId][assetsAddress], "amount overflow");
+        require(
+            opAmount <= delegateToRecords[stakerAddress][operatorAddr][clientChainLzId][assetsAddress],
+            "amount overflow"
+        );
         delegateToRecords[stakerAddress][operatorAddr][clientChainLzId][assetsAddress] -= opAmount;
         emit UndelegateRequestProcessed(
             clientChainLzId, lzNonce, assetsAddress, stakerAddress, string(operatorAddr), opAmount
         );
         return true;
     }
+
     function delegateTo(
         uint32 clientChainLzId,
         bytes memory assetsAddress,
@@ -77,6 +81,7 @@ contract DelegationMock is IDelegation {
         );
         return true;
     }
+
     function undelegateFrom(
         uint32 clientChainLzId,
         bytes memory assetsAddress,
@@ -87,7 +92,10 @@ contract DelegationMock is IDelegation {
         require(assetsAddress.length == 32, "invalid asset address");
         require(stakerAddress.length == 32, "invalid staker address");
         require(operatorAddr.length == 42, "invalid operator address");
-        require(opAmount <= delegateToRecords[stakerAddress][operatorAddr][clientChainLzId][assetsAddress], "amount overflow");
+        require(
+            opAmount <= delegateToRecords[stakerAddress][operatorAddr][clientChainLzId][assetsAddress],
+            "amount overflow"
+        );
         delegateToRecords[stakerAddress][operatorAddr][clientChainLzId][assetsAddress] -= opAmount;
         uint64 lzNonce = 12;
         emit UndelegateRequestProcessed(

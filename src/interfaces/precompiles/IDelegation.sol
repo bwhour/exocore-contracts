@@ -66,4 +66,5 @@ interface IDelegation {
         bytes memory operatorAddr,
         uint256 opAmount
     ) external returns (bool success);
+
 }

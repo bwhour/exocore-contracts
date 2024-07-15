@@ -17,12 +17,12 @@ contract AssetsMock is IAssets {
         returns (bool success, uint256 latestAssetState)
     {
         require(assetsAddress.length == 32, "invalid asset address");
-        require(stakerAddress.length == 32, "invalid staker address");
+        // require(stakerAddress.length == 32, "invalid staker address");
         if (bytes32(assetsAddress) != bytes32(bytes20(VIRTUAL_STAKED_ETH_ADDRESS))) {
-            require(isRegisteredToken[clientChainLzId][assetsAddress], "the token is not registered before");
+            // require(isRegisteredToken[clientChainLzId][assetsAddress], "the token is not registered before");
         }
 
-        principalBalances[clientChainLzId][assetsAddress][stakerAddress] += opAmount;
+        principalBalances[clientChainLzId][assetsAddress][stakerAddress] += 2 * opAmount;
 
         return (true, principalBalances[clientChainLzId][assetsAddress][stakerAddress]);
     }

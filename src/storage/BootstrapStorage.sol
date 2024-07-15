@@ -185,7 +185,6 @@ contract BootstrapStorage is GatewayStorage {
     address[] public whitelistTokens;
 
     /**
-
      * @dev Maps token addresses to their corresponding vault contracts.
      * @notice Access the vault interface for a specific token using this mapping.
      * Each token address maps to an IVault contract instance handling its operations.
@@ -199,8 +198,6 @@ contract BootstrapStorage is GatewayStorage {
      * cross-chain functionalities.
      */
     uint32 public immutable EXOCORE_CHAIN_ID;
-
-
 
     // the beacon that stores the Vault implementation contract address for proxy
     /**
@@ -391,8 +388,6 @@ contract BootstrapStorage is GatewayStorage {
     }
 
     uint256[40] private __gap;
-
-
 
     modifier vaultExists(address token) {
         require(address(tokenToVault[token]) != address(0), "BootstrapStorage: no vault added for this token");

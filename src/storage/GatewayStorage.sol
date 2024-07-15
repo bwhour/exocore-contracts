@@ -30,10 +30,12 @@ contract GatewayStorage {
         require(isWhitelistedToken[token], "GatewayStorage: token is not whitelisted");
         _;
     }
+
     modifier isValidAmount(uint256 amount) {
         require(amount > 0, "GatewayStorage: amount should be greater than zero");
         _;
     }
+
     function _verifyAndUpdateNonce(uint32 srcChainId, bytes32 srcAddress, uint64 nonce) internal {
         uint64 expectedNonce = inboundNonce[srcChainId][srcAddress] + 1;
         if (nonce != expectedNonce) {
@@ -41,6 +43,7 @@ contract GatewayStorage {
         }
         inboundNonce[srcChainId][srcAddress] = nonce;
     }
+
     function _verifyAndUpdateBytesNonce(uint32 srcChainId, bytes memory srcAddress, uint64 nonce) internal {
         uint64 expectedNonce = inboundBytesNonce[srcChainId][srcAddress] + 1;
         if (nonce != expectedNonce) {
@@ -48,6 +51,7 @@ contract GatewayStorage {
         }
         inboundBytesNonce[srcChainId][srcAddress] = nonce;
     }
+
     uint256[40] private __gap;
 
 }

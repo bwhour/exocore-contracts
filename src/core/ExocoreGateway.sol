@@ -350,5 +350,4 @@ contract ExocoreGateway is
         return inboundNonce[srcEid][sender] + 1;
     }
 
-
 }

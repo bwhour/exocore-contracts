@@ -5,7 +5,7 @@ import "../../src/core/ExocoreGateway.sol";
 import "../../src/interfaces/precompiles/IDelegation.sol";
 import "../../src/storage/GatewayStorage.sol";
 
-import "../mocks/AssetsMock.sol";
+import "../../src/mock/AssetsMock.sol";
 import "../mocks/DelegationMock.sol";
 import "./ExocoreDeployer.t.sol";
 
