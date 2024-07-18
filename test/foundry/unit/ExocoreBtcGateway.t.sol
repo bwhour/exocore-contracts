@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "../../../src/core/ExocoreBtcGateway.sol";
+import "../../../src/core/ExocoreBtcGatewayMock.sol";
 import "../../../src/interfaces/IExocoreBtcGateway.sol";
 import "../../../src/interfaces/precompiles/IAssets.sol";
 import "../../../src/interfaces/precompiles/IClaimReward.sol";
@@ -12,9 +12,10 @@ import "forge-std/Test.sol";
 
 contract ExocoreBtcGatewayTest is IExocoreBtcGateway, Test {
 
-    ExocoreBtcGateway internal exocoreBtcGateway;
+    ExocoreBtcGatewayMock internal exocoreBtcGateway;
+    uint32 internal exocoreChainId = 2;
+    uint32 internal clientBtcChainId = 111;
     address internal validator = address(0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266);
-    address internal other = address(0x456);
     address internal btcToken = address(0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599);
     bytes internal BTC_TOKEN = abi.encodePacked(bytes12(0), btcToken);
 
@@ -26,7 +27,7 @@ contract ExocoreBtcGatewayTest is IExocoreBtcGateway, Test {
         bytes memory AssetsMockCode = vm.getDeployedCode("AssetsMock.sol");
         vm.etch(ASSETS_PRECOMPILE_ADDRESS, AssetsMockCode);
         // Deploy the main contract
-        exocoreBtcGateway = new ExocoreBtcGateway(validator);
+        exocoreBtcGateway = new ExocoreBtcGatewayMock(validator);
         // Whitelist the btcToken
         // Calculate the storage slot for the mapping
         bytes32 whitelistedSlot = bytes32(
@@ -49,7 +50,7 @@ contract ExocoreBtcGatewayTest is IExocoreBtcGateway, Test {
         vm.prank(validator);
         exocoreBtcGateway.registerAddress(btcAddress, exocoreAddress);
         InterchainMsg memory _msg = InterchainMsg({
-            srcChainID: 1,
+            srcChainID: 111,
             dstChainID: 2,
             srcAddress: btcAddress,
             dstAddress: _stringToBytes("tb1qqytgqkzvg48p700s46n57wfgaf04h7ca5m03qcschaawv9qqw2vsp67ku4"),
@@ -61,12 +62,11 @@ contract ExocoreBtcGatewayTest is IExocoreBtcGateway, Test {
         });
 
         bytes memory signature =
-            hex"1b599ef9aebf5d2a65c6e8288e1e1d3fbcbe30d891a016110c5dbba48a91037f34c5b1b5cc5903b59a19ae5b58ebd3eb659deaf651b74bf4b50ca5bc22e8f7b11c";
+            hex"aa70b655593f96d19dca3ef0bfc6602b6597a3b6253de2b709b81306a09d46867f857e8a44e64f0c1be6f4ec90a66e28401e007b7efb6fd344164af8316e1f571b";
 
         // Check if the event is emitted correctly
-        // Use vm.expectEmit to check the event
-        // vm.expectEmit(true, true, true, true);
-        // emit DepositCompleted(_msg.txTag, BTC_TOKEN, _msg.srcAddress, _msg.amount, 79_800_000_000_000);
+        vm.expectEmit(true, true, true, true);
+        emit DepositCompleted(_msg.txTag, BTC_TOKEN, _msg.srcAddress, _msg.amount, 39_900_000_000_000);
 
         bytes memory data = abi.encodeWithSelector(exocoreBtcGateway.depositTo.selector, _msg, signature);
 
@@ -76,41 +76,6 @@ contract ExocoreBtcGatewayTest is IExocoreBtcGateway, Test {
         vm.prank(validator);
         exocoreBtcGateway.depositTo(_msg, signature);
     }
-
-    /**
-     * @notice Test the depositTo function with the second InterchainMsg.
-     */
-    //    function testDepositToWithSecondMessage() public {
-    //        assertTrue(exocoreBtcGateway.isWhitelistedToken(btcToken));
-    //        InterchainMsg memory msg = InterchainMsg({
-    //            srcChainID: 1,
-    //            dstChainID: 2,
-    //            srcAddress: _stringToBytes("tb1qpgs28w6krzntxdvgvgygwan4md669q7w4wz4yd"),
-    //            dstAddress: _stringToBytes("tb1qqytgqkzvg48p700s46n57wfgaf04h7ca5m03qcschaawv9qqw2vsp67ku4"),
-    //            token: btcToken,
-    //            amount: 1_000_000_000_000_000_000, // 1 ETH
-    //            nonce: 1,
-    //            txTag: _stringToBytes("a7c7c47e11b27a242c9284ca5e050bcc4560145469d49044053d229574101653-0"),
-    //            payload: _stringToBytes("0x")
-    //        });
-    //
-    //        bytes memory signature = ""; // Provide a valid signature here
-    //
-    //        // Simulate the validator calling the depositTo function
-    //        vm.prank(validator);
-    //        exocoreBtcGateway.depositTo(msg, signature);
-    //
-    //        // Check if the event is emitted correctly
-    //        // Use vm.expectEmit to check the event
-    //        vm.expectEmit(true, true, true, true);
-    //        emit exocoreBtcGateway.DepositCompleted(
-    //            msg.txTag,
-    //            abi.encodePacked(msg.token),
-    //            msg.srcAddress,
-    //            msg.amount,
-    //            0 // Assume 0 for now, should be fetched from the contract
-    //        );
-    //    }
 
     function _stringToBytes(string memory source) internal pure returns (bytes memory) {
         return abi.encodePacked(source);

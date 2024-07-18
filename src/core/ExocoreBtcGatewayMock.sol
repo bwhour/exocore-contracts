@@ -14,7 +14,7 @@ import {ReentrancyGuardUpgradeable} from "@openzeppelin-upgradeable/contracts/ut
 import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 import "forge-std/console.sol";
 
-contract ExocoreBtcGateway is
+contract ExocoreBtcGatewayMock is
     IExocoreBtcGateway,
     Initializable,
     PausableUpgradeable,
@@ -107,14 +107,10 @@ contract ExocoreBtcGateway is
 
         console.logBytes(encodeMsg);
 
-        console.logBytes(signature);
-        console.log(signature.length);
-
         bytes32 messageHash = keccak256(encodeMsg);
         bytes32 digest = messageHash.toEthSignedMessageHash();
 
         console.logBytes32(messageHash);
-        console.logBytes32(digest);
 
         SignatureVerifier.verifyMsgSig(exocoreValidatorSetAddress, digest, signature);
     }
@@ -152,10 +148,12 @@ contract ExocoreBtcGateway is
         // Verify signature
         _verifySignature(_msg, signature);
 
+        console.log("verify sig done, nonce: ", _msg.nonce);
         exocoreAddress = btcToExocoreAddress[btcAddress];
         if (exocoreAddress.length == 0) {
             revert BtcAddressNotRegistered();
         }
+        console.log("verify addr done");
     }
 
     /**
@@ -172,15 +170,19 @@ contract ExocoreBtcGateway is
         onlyAuthorizedValidator
     {
         (bytes memory btcTxTag, bytes memory btcAddress,) = _processAndVerify(_msg, signature);
+        console.log("ASSETS_CONTRACT:", address(ASSETS_CONTRACT));
         try ASSETS_CONTRACT.depositTo(_msg.srcChainID, BTC_TOKEN, btcAddress, _msg.amount) returns (
             bool success, uint256 updatedBalance
         ) {
             if (!success) {
+                console.log("depositTo failed");
                 revert DepositFailed(btcTxTag);
             }
+            console.log("depositTo success");
             processedBtcTxs[btcTxTag] = TxInfo(true, block.timestamp);
             emit DepositCompleted(btcTxTag, BTC_TOKEN, btcAddress, _msg.amount, updatedBalance);
         } catch {
+            console.log("depositTo Error");
             emit ExocorePrecompileError(address(ASSETS_CONTRACT));
             revert DepositFailed(btcTxTag);
         }

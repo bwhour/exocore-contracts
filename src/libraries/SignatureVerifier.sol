@@ -6,7 +6,7 @@ bytes32 constant EIP2098_allButHighestBitMask = (0x7ffffffffffffffffffffffffffff
 
 library SignatureVerifier {
 
-    // 定义错误
+    // define errors.
     error BadSignatureV(uint8 v);
     error InvalidSigner();
     error InvalidSignature();
