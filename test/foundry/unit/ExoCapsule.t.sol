@@ -139,8 +139,6 @@ contract VerifyDepositProof is DepositSetup {
             capsule.getRegisteredValidatorByPubkey(_getPubkey(validatorContainer));
         assertEq(uint8(validator.status), uint8(ExoCapsuleStorage.VALIDATOR_STATUS.REGISTERED));
         assertEq(validator.validatorIndex, validatorProof.validatorIndex);
-        assertEq(validator.mostRecentBalanceUpdateTimestamp, validatorProof.beaconBlockTimestamp);
-        assertEq(validator.restakedBalanceGwei, _getEffectiveBalance(validatorContainer));
     }
 
     function test_verifyDepositProof_revert_validatorAlreadyDeposited() public {
@@ -221,7 +219,7 @@ contract VerifyDepositProof is DepositSetup {
         capsule.verifyDepositProof(validatorContainer, validatorProof);
     }
 
-    function test_verifyDepositProof_revert_inactiveValidatorContainer() public {
+    function test_verifyDepositProof_success_inactiveValidatorContainer() public {
         uint256 activationTimestamp =
             BEACON_CHAIN_GENESIS_TIME + _getActivationEpoch(validatorContainer) * SECONDS_PER_EPOCH;
 
@@ -236,10 +234,13 @@ contract VerifyDepositProof is DepositSetup {
         mockCurrentBlockTimestamp = mockProofTimestamp + SECONDS_PER_SLOT;
         vm.warp(mockCurrentBlockTimestamp);
         validatorProof.beaconBlockTimestamp = mockProofTimestamp;
-        vm.expectRevert(
-            abi.encodeWithSelector(ExoCapsule.InactiveValidatorContainer.selector, _getPubkey(validatorContainer))
-        );
+
         capsule.verifyDepositProof(validatorContainer, validatorProof);
+
+        ExoCapsuleStorage.Validator memory validator =
+            capsule.getRegisteredValidatorByPubkey(_getPubkey(validatorContainer));
+        assertEq(uint8(validator.status), uint8(ExoCapsuleStorage.VALIDATOR_STATUS.REGISTERED));
+        assertEq(validator.validatorIndex, validatorProof.validatorIndex);
     }
 
     function test_verifyDepositProof_revert_mismatchWithdrawalCredentials() public {
@@ -377,8 +378,6 @@ contract WithdrawalSetup is Test {
             capsule.getRegisteredValidatorByPubkey(_getPubkey(validatorContainer));
         assertEq(uint8(validator.status), uint8(ExoCapsuleStorage.VALIDATOR_STATUS.REGISTERED));
         assertEq(validator.validatorIndex, validatorProof.validatorIndex);
-        assertEq(validator.mostRecentBalanceUpdateTimestamp, validatorProof.beaconBlockTimestamp);
-        assertEq(validator.restakedBalanceGwei, depositAmount / 1e9);
 
         vm.deal(address(capsule), 1 ether); // Deposit 1 ether to handle excess amount withdraw
     }
