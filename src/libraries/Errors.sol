@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
 /// @dev @title Errors library
@@ -164,6 +165,12 @@ library Errors {
 
     /// @dev ExocoreGateway: client chain should be registered before setting peer to change peer address
     error ExocoreGatewayNotRegisteredClientChainId();
+
+    /// @dev ExocoreGateway: thrown when associateOperatorWithEVMStaker failed
+    error AssociateOperatorFailed(uint32 clientChainId, address staker, string operator);
+
+    /// @dev thrown when dissociateOperatorFromEVMStaker failed
+    error DissociateOperatorFailed(uint32 clientChainId, address staker);
 
     ////////////////////////////////////////
     //  NativeRestakingController Errors  //
